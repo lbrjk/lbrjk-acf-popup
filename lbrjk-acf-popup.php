@@ -1,15 +1,25 @@
 <?php
 
 /**
- * Plugin Name: LBRJK ACF Popup
- * Description: A lightweight popup solution using Advanced Custom Fields
- * Version: 0.0.2
- * Author: Lumberjack
+Plugin Name: LBRJK ACF Popup
+Description: A lightweight popup solution using Advanced Custom Fields
+Version: 1.0.0
+Author: Lumberjack
+Author URI: https://lbrjk.com
+Text Domain: lbrjk-acf-popup
  */
+
+// Prevent direct file access
+defined('ABSPATH') or exit;
+
+define('LACFPOP_VERSION' ,'1.0.0');
+define('LACFPOP_PLUGIN_DIR', dirname(__FILE__) . '/');
+define('LACFPOP_PLUGIN_URL', plugins_url('/', __FILE__));
+define('LACFPOP_PLUGIN_FILE', __FILE__);
 
 /**
  * Set directory for ACF to load fields from
- * @param  [type] $paths Set new paths
+ * @param  string $paths Set new paths
  * @return string        New paths
  */
 add_filter( 'acf/settings/load_json', function( $paths ) {
@@ -23,6 +33,7 @@ add_filter( 'acf/settings/load_json', function( $paths ) {
 /**
  * Simple function to return status of the popup
  * based on field value
+ *
  * @return bool is the popup enabled
  */
 function lbjrk_popup_enabled() {
@@ -30,19 +41,8 @@ function lbjrk_popup_enabled() {
 }
 
 /**
- * Make the popup inactive by default
- * by adding inactive class to the body
- */
-// add_filter( 'body_class', function( $classes ) {
-// 	if( lbjrk_popup_enabled() ) {
-// 		$classes[] = 'popup-inactive';
-// 	}
-
-// 	return $classes;
-// } );
-
-/**
  * Add the ACF options page
+ *
  */
 if( function_exists( 'acf_add_options_page' ) ) {
 	acf_add_options_page( array(
@@ -56,16 +56,20 @@ if( function_exists( 'acf_add_options_page' ) ) {
 
 /**
  * Include the necessary plugin styles and scripts
+ *
  */
 add_action( 'wp_enqueue_scripts', function() {
 	if( lbjrk_popup_enabled() ) {
-		wp_enqueue_script( 'lbrjk-acf-popup', plugins_url( 'lbrjk-acf-popup.js', __FILE__ ), ['jquery'], null, true );
-		wp_enqueue_style( 'lbrjk-acf-popup', plugins_url( 'lbrjk-acf-popup.css', __FILE__ ), null, null );
+		wp_register_script( 'lbrjk-acf-popup-js', LACFPOP_PLUGIN_URL . 'assets/js/lbrjk-acf-popup.js', array('jquery'), LACFPOP_VERSION, true );
+		wp_register_style( 'lbrjk-acf-popup-css', LACFPOP_PLUGIN_URL . 'assets/css/lbrjk-acf-popup.css', array(), LACFPOP_VERSION);
+		wp_enqueue_script( 'lbrjk-acf-popup-js' );
+		wp_enqueue_style( 'lbrjk-acf-popup-css' );
 	}
 }, 20, 1 );
 
 /**
  * Insert popup markup to page
+ *
  */
 add_action( 'wp_footer', function() {
 	if( lbjrk_popup_enabled() ) {
